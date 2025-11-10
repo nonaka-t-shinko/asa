@@ -157,6 +157,11 @@
             -ms-user-select: none; /* IE用：ユーザー選択なし */
         }
 
+        /* 画像が存在するメニューリンクの背景色 */
+        .menu-link.has-image {
+            background-color: #ffe4ef; /* 背景色：薄いピンク */
+        }
+
         /* トップレベルメニューリンクの左パディング調整 */
         .menu-list > .menu-item > .menu-link {
             padding-left: 8px; /* 左パディング：8px（トグルボタンとの間隔調整） */
@@ -1312,6 +1317,46 @@
             }
         }
 
+        // 画像の存在をチェックする関数（非同期処理）
+        // itemId: チェック対象のメニューアイテムID
+        // 戻り値: Promise<boolean> - 画像が存在する場合true、存在しない場合false
+        function checkImageExists(itemId) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                const imagePath = `img/${itemId}.png`;
+                
+                img.onload = function() {
+                    // 画像の読み込みに成功した場合
+                    resolve(true);
+                };
+                
+                img.onerror = function() {
+                    // 画像の読み込みに失敗した場合（画像が存在しない）
+                    resolve(false);
+                };
+                
+                img.src = imagePath;
+            });
+        }
+
+        // 全てのメニューアイテムの画像存在をチェックして、画像がある場合のみクラスを追加する関数
+        async function checkAllMenuImages() {
+            // 全てのメニューリンクを取得
+            const allMenuLinks = document.querySelectorAll('.menu-link[data-id]');
+            
+            // 各メニューリンクの画像をチェック
+            for (const link of allMenuLinks) {
+                const itemId = link.dataset.id;
+                const imageExists = await checkImageExists(itemId);
+                
+                if (imageExists) {
+                    // 画像が存在する場合のみ、has-imageクラスを追加
+                    link.classList.add('has-image');
+                }
+                // 画像が存在しない場合は何もしない（デフォルトのスタイルのまま）
+            }
+        }
+
         // 初期化関数（アプリケーションの起動処理）
         function init() {
             // メニューHTMLを動的に生成してDOMに挿入
@@ -1326,6 +1371,9 @@
 
             // 全てのイベントリスナーを設定
             setupEventListeners();
+
+            // 全てのメニューアイテムの画像をチェック
+            checkAllMenuImages();
 
             // 初期ページとして最初のメニュー項目を表示
             if (menuData.length > 0) {
