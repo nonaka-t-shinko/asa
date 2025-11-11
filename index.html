@@ -42,6 +42,25 @@
             display: flex; /* フレックスボックスレイアウト */
             flex-direction: column; /* フレックス方向：列（垂直方向） */
             overflow: hidden; /* オーバーフロー：隠す */
+            position: relative; /* 位置：相対（リサイザーの配置のため） */
+        }
+
+        /* リサイザー（境界線ドラッグハンドル） */
+        .resizer {
+            position: absolute; /* 位置：絶対 */
+            right: -5px; /* 右端から-5px（境界線の中央に配置） */
+            top: 0; /* 上端 */
+            width: 10px; /* 幅：10px（ドラッグ可能な範囲） */
+            height: 100%; /* 高さ：100% */
+            cursor: col-resize; /* カーソル：左右リサイズ */
+            z-index: 1000; /* Zインデックス：最前面 */
+            background: transparent; /* 背景色：透明 */
+        }
+
+        /* リサイザーのホバー/ドラッグ中の視覚的フィードバック */
+        .resizer:hover,
+        .resizer.resizing {
+            background: rgba(33, 150, 243, 0.3); /* 背景色：半透明の青 */
         }
 
         /* メニューエリアのヘッダー部分 */
@@ -53,6 +72,9 @@
             color: #ffffff; /* 文字色：白色 */
             text-align: center; /* テキスト配置：中央 */
             flex-shrink: 0; /* フレックス縮小：なし（高さ固定） */
+            white-space: nowrap; /* テキストの折り返し：なし */
+            overflow: hidden; /* オーバーフロー：隠す */
+            text-overflow: ellipsis; /* テキストオーバーフロー：省略記号（...）を表示 */
         }
 
         /* メニュー検索フィルタエリア */
@@ -126,12 +148,15 @@
         /* メニュー項目の基本スタイル */
         .menu-list > .menu-item {
             position: relative; /* 位置：相対（子要素の絶対位置の基準点） */
+            white-space: nowrap; /* テキストの折り返し：なし（1行に保つ） */
+            overflow: hidden; /* オーバーフロー：隠す */
         }
 
         /* メニュートグルとメニューリンクのインラインブロック表示 */
         .menu-list > .menu-item > .menu-toggle,
         .menu-list > .menu-item > .menu-link {
             display: inline-block; /* 表示：インラインブロック（横並び配置） */
+            vertical-align: middle; /* 垂直配置：中央揃え */
         }
 
         /* メニュートグルの右マージン設定 */
@@ -201,8 +226,8 @@
 
         /* メニューリンクの基本スタイル */
         .menu-link {
-            display: block; /* 表示：ブロック（行全体を占める） */
-            padding: 4px 15px 4px 35px; /* パディング：上4px 右15px 下4px 左35px */
+            display: inline-block; /* 表示：インラインブロック（横並びを維持） */
+            padding: 4px 15px 4px 8px; /* パディング：上4px 右15px 下4px 左8px */
             text-decoration: none; /* テキスト装飾：なし（下線なし） */
             color: #333; /* 文字色：濃いグレー */
             cursor: pointer; /* カーソル：ポインター（クリック可能を示す） */
@@ -213,16 +238,16 @@
             -webkit-user-select: none; /* Webkit用：ユーザー選択なし */
             -moz-user-select: none; /* Firefox用：ユーザー選択なし */
             -ms-user-select: none; /* IE用：ユーザー選択なし */
+            white-space: nowrap; /* テキストの折り返し：なし */
+            overflow: hidden; /* オーバーフロー：隠す */
+            text-overflow: ellipsis; /* テキストオーバーフロー：省略記号（...）を表示 */
+            max-width: calc(100% - 30px); /* 最大幅：トグルボタン分を考慮 */
+            vertical-align: middle; /* 垂直配置：中央揃え */
         }
 
         /* 画像が存在するメニューリンクの背景色 */
         .menu-link.has-image {
             background-color: #ffe4ef; /* 背景色：薄いピンク */
-        }
-
-        /* トップレベルメニューリンクの左パディング調整 */
-        .menu-list > .menu-item > .menu-link {
-            padding-left: 8px; /* 左パディング：8px（トグルボタンとの間隔調整） */
         }
 
         /* メニューリンクのホバー状態 */
@@ -256,20 +281,16 @@
             will-change: max-height, opacity; /* 変更予定プロパティ：パフォーマンス最適化 */
         }
 
+        /* サブメニュー内のメニュー項目 */
+        .menu-submenu .menu-item {
+            white-space: nowrap; /* テキストの折り返し：なし（1行に保つ） */
+            overflow: hidden; /* オーバーフロー：隠す */
+        }
+
         /* 展開状態のサブメニュー */
         .menu-submenu.expanded {
             max-height: none; /* 最大高さ：なし（高さ制限解除） */
             opacity: 1; /* 不透明度：1（完全に表示） */
-        }
-
-        /* サブメニューのインデント（統一） */
-        .menu-submenu .menu-link {
-            display: inline-block; /* 表示：インラインブロック */
-            padding-left: 8px; /* 左パディング：8px */
-            padding-right: 15px; /* 右パディング：15px */
-            padding-top: 4px; /* 上パディング：4px */
-            padding-bottom: 4px; /* 下パディング：4px */
-            line-height: 1.4; /* 行高：1.4 */
         }
 
         /* 左側メニューエリア（閉じた状態） */
@@ -384,7 +405,7 @@
         .content-header {
             background-color: #ffffff; /* 背景色：白色 */
             border-bottom: 1px solid #e0e0e0; /* 下境界線：1px 薄いグレー */
-            padding: 5px 10px 10px 10px; /* パディング：上5px 右10px 下10px 左10px */
+            padding: 7px 10px 10px 10px; /* パディング：上15px 右10px 下10px 左10px */
             flex-shrink: 0; /* フレックス縮小：0（サイズ固定） */
         }
 
@@ -487,6 +508,8 @@
     <div class="container">
         <!-- 左側メニューエリア -->
         <div class="menu-area">
+            <!-- リサイザー：境界線のドラッグハンドル -->
+            <div class="resizer" id="resizer"></div>
             <!-- メニューエリアのヘッダー -->
             <div class="menu-header">丸朝園芸農協総合システム(通称XXX)</div>
             <!-- メニュー検索フィルタエリア -->
@@ -1466,8 +1489,87 @@
             });
         }
 
+        // リサイズ機能の初期化
+        function initResize() {
+            const resizer = document.getElementById('resizer');
+            const menuArea = cachedElements.menuArea;
+            let isResizing = false;
+            let currentX = 0;
+            let startX = 0;
+            let startWidth = 0;
+
+            // 最小幅と最大幅の設定
+            const minWidth = 300; // 最小幅：300px
+            let maxWidth = window.innerWidth * 0.8; // 最大幅：画面幅の80%
+
+            // マウスダウン時の処理（ドラッグ開始）
+            resizer.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                isResizing = true;
+                startX = e.clientX;
+                currentX = e.clientX;
+                startWidth = menuArea.offsetWidth;
+
+                // リサイズ中のクラスを追加（視覚的フィードバック）
+                resizer.classList.add('resizing');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none'; // テキスト選択を無効化
+            });
+
+            // マウス移動時の処理（ドラッグ中）- イベント発生時に座標を記録するだけ
+            document.addEventListener('mousemove', function(e) {
+                if (!isResizing) return;
+                currentX = e.clientX;
+            }, { passive: true }); // passiveオプションでパフォーマンス向上
+
+            // リサイズ処理を高速化するための関数
+            function performResize() {
+                if (!isResizing) return;
+
+                const deltaX = currentX - startX;
+                const newWidth = startWidth + deltaX;
+
+                // 最小幅と最大幅の範囲内で幅を設定
+                if (newWidth >= minWidth && newWidth <= maxWidth) {
+                    menuArea.style.width = newWidth + 'px';
+                }
+
+                // 次のフレームでも実行（リサイズ中は連続実行）
+                requestAnimationFrame(performResize);
+            }
+
+            // mousedownが発生したらrequestAnimationFrameでリサイズ開始
+            resizer.addEventListener('mousedown', function() {
+                requestAnimationFrame(performResize);
+            });
+
+            // マウスアップ時の処理（ドラッグ終了）
+            document.addEventListener('mouseup', function() {
+                if (isResizing) {
+                    isResizing = false;
+                    resizer.classList.remove('resizing');
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = ''; // テキスト選択を再有効化
+                }
+            });
+
+            // ウィンドウのリサイズ時に最大幅を更新
+            window.addEventListener('resize', function() {
+                maxWidth = window.innerWidth * 0.8; // 最大幅を更新
+                const currentWidth = menuArea.offsetWidth;
+                
+                // 現在の幅が新しい最大幅を超えている場合は調整
+                if (currentWidth > maxWidth) {
+                    menuArea.style.width = maxWidth + 'px';
+                }
+            });
+        }
+
         // イベントリスナーの設定（ユーザーインタラクションの処理）
         function setupEventListeners() {
+            // リサイズ機能を初期化
+            initResize();
+
             // メニューフィルタの入力イベント
             const filterInput = document.getElementById('menuFilterInput');
             if (filterInput) {
