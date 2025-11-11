@@ -1750,8 +1750,24 @@
                 // 閉じている場合 → 開く
                 cachedElements.menuArea.classList.remove('closed');
                 cachedElements.menuToggleButton.classList.remove('closed');
+                
+                // リサイズで設定された幅がある場合は、その幅に戻す
+                if (cachedElements.menuArea.dataset.previousWidth) {
+                    cachedElements.menuArea.style.width = cachedElements.menuArea.dataset.previousWidth;
+                } else {
+                    // リサイズされていない場合は、インラインスタイルをクリア（CSSのデフォルト値を使用）
+                    cachedElements.menuArea.style.width = '';
+                }
             } else {
                 // 開いている場合 → 閉じる
+                // 現在の幅を保存（リサイズされている可能性があるため）
+                const currentWidth = cachedElements.menuArea.style.width || '';
+                if (currentWidth) {
+                    cachedElements.menuArea.dataset.previousWidth = currentWidth;
+                }
+                
+                // インラインスタイルで幅を0に設定（CSSのclosedクラスより優先させる）
+                cachedElements.menuArea.style.width = '0';
                 cachedElements.menuArea.classList.add('closed');
                 cachedElements.menuToggleButton.classList.add('closed');
             }
@@ -1776,6 +1792,14 @@
                 // メニューが閉じていたら自動で開く
                 cachedElements.menuArea.classList.remove('closed');
                 cachedElements.menuToggleButton.classList.remove('closed');
+                
+                // リサイズで設定された幅がある場合は、その幅に戻す
+                if (cachedElements.menuArea.dataset.previousWidth) {
+                    cachedElements.menuArea.style.width = cachedElements.menuArea.dataset.previousWidth;
+                } else {
+                    // リサイズされていない場合は、インラインスタイルをクリア（CSSのデフォルト値を使用）
+                    cachedElements.menuArea.style.width = '';
+                }
             }
         }
 
